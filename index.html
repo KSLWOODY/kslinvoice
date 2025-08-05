@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>송장번호 조회</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+
+  <h2>송장번호 조회</h2>
+  <input type="text" id="searchInput" placeholder="MIS" />
+  <button id="searchBtn">검색</button>
+  <p id="result"></p>
+
+  <script>
+    let rowData = [];
+
+    // 엑셀 파일을 서버에서 불러오기
+    fetch('data.xlsx')
+      .then(response => response.arrayBuffer())
+      .then(data => {
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+        rowData = jsonData.slice(1); // 헤더 제외
+        console.log("엑셀 불러오기 성공");
+      })
+      .catch(err => {
+        console.error("엑셀 불러오기 실패", err);
+      });
+
+    document.getElementById('searchBtn').addEventListener('click', () => {
+      const input = document.getElementById('searchInput').value.trim();
+      const resultEl = document.getElementById('result');
+
+      const found = rowData.find(row => row[0]?.toString().trim() === input);
+
+      if (found) {
+        resultEl.textContent = `결과: ${found[1] ?? "없음"}`;
+      } else {
+        resultEl.textContent = "일치하는 항목이 없습니다.";
+      }
+    });
+  </script>
+
+</body>
+</html>
