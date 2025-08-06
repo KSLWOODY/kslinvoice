@@ -3,81 +3,68 @@
 <head>
   <meta charset="UTF-8">
   <title>송장번호 조회</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-   <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      padding: 20px;
-      font-size: 18px;
-      max-width: 600px;
-      margin: auto;
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; font-size: 18px; max-width: 600px; margin: auto; }
+    h2 { font-size: 24px; text-align: center; }
+    select, input[type="text"], button {
+      width: 100%; padding: 12px; margin-top: 10px; font-size: 18px; box-sizing: border-box;
     }
-
-    h2 {
-      font-size: 24px;
-      text-align: center;
-    }
-
-    input[type="text"] {
-      width: 100%;
-      padding: 12px;
-      font-size: 18px;
-      margin: 12px 0;
-      box-sizing: border-box;
-    }
-
-    button {
-      width: 100%;
-      padding: 14px;
-      font-size: 18px;
-      background-color: #007BFF;
-      color: white;
-      border: none;
-      cursor: pointer;
-      border-radius: 5px;
-    }
-
-    button:hover {
-      background-color: #0056b3;
-    }
-
-    #result {
-      margin-top: 20px;
-      font-size: 20px;
-      font-weight: bold;
-      text-align: center;
-    }
+    button { background-color: #007BFF; color: white; border: none; border-radius: 5px; }
+    button:hover { background-color: #0056b3; }
+    #result { margin-top: 20px; font-size: 20px; font-weight: bold; text-align: center; }
   </style>
 </head>
 <body>
 
   <h2>송장번호 조회</h2>
+
+  <label for="fileSelector">주문일 선택</label>
+  <select id="fileSelector">
+    <option value="data1.xlsx">7월 21일</option>
+    <option value="data2.xlsx">7월 28일</option>
+  </select>
+
   <input type="text" id="searchInput" placeholder="MIS" />
   <button id="searchBtn">검색</button>
-  <p id="result"></p>
+
+  <p id="result">파일을 불러오는 중...</p>
 
   <script>
-    let rowData = [];
+    const fileSelector = document.getElementById('fileSelector');
+    let dataMap = {
+      "0721.xlsx": [],
+      "0728.xlsx": []
+    };
 
-    // 엑셀 파일을 서버에서 불러오기
-    fetch('data.xlsx')
-      .then(response => response.arrayBuffer())
-      .then(data => {
-        const workbook = XLSX.read(data, { type: 'array' });
-        const sheet = workbook.Sheets[workbook.SheetNames[0]];
-        const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-        rowData = jsonData.slice(1); // 헤더 제외
-        console.log("엑셀 불러오기 성공");
+    // 엑셀 파일을 미리 모두 불러오기
+    const loadExcel = (filename) => {
+      return fetch(filename)
+        .then(response => response.arrayBuffer())
+        .then(data => {
+          const workbook = XLSX.read(data, { type: 'array' });
+          const sheet = workbook.Sheets[workbook.SheetNames[0]];
+          const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+          dataMap[filename] = jsonData.slice(1); // 헤더 제외
+        });
+    };
+
+    Promise.all([loadExcel("data1.xlsx"), loadExcel("data2.xlsx")])
+      .then(() => {
+        document.getElementById("result").textContent = "검색할 수 있습니다.";
       })
-      .catch(err => {
-        console.error("엑셀 불러오기 실패", err);
+      .catch(() => {
+        document.getElementById("result").textContent = "파일 불러오기 실패.";
       });
 
     document.getElementById('searchBtn').addEventListener('click', () => {
+      const selectedFile = fileSelector.value;
       const input = document.getElementById('searchInput').value.trim();
       const resultEl = document.getElementById('result');
+      const data = dataMap[selectedFile];
 
-      const found = rowData.find(row => row[0]?.toString().trim() === input);
+      const found = data.find(row => row[0]?.toString().trim() === input);
 
       if (found) {
         resultEl.textContent = `결과: ${found[1] ?? "없음"}`;
