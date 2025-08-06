@@ -22,8 +22,8 @@
 
   <label for="fileSelector">주문일 선택</label>
   <select id="fileSelector">
-    <option value="data1.xlsx">7월 21일</option>
-    <option value="data2.xlsx">7월 28일</option>
+    <option value="0721.xlsx">7월 21일</option>
+    <option value="0728.xlsx">7월 28일</option>
   </select>
 
   <input type="text" id="searchInput" placeholder="MIS" />
@@ -50,7 +50,7 @@
         });
     };
 
-    Promise.all([loadExcel("data1.xlsx"), loadExcel("data2.xlsx")])
+    Promise.all([loadExcel("0721.xlsx"), loadExcel("data2.xlsx")])
       .then(() => {
         document.getElementById("result").textContent = "검색할 수 있습니다.";
       })
@@ -76,4 +76,5 @@
 
 </body>
 </html>
+
 
