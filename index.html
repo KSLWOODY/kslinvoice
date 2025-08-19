@@ -22,8 +22,8 @@
 
   <label for="fileSelector">주문일 선택</label>
   <select id="fileSelector">
-    <option value="0728.xlsx">7월 28일</option>
     <option value="0804.xlsx">8월 4일</option>
+    <option value="0811.xlsx">8월 11일</option>
   </select>
 
   <input type="text" id="searchInput" placeholder="MIS" />
@@ -34,8 +34,8 @@
   <script>
     const fileSelector = document.getElementById('fileSelector');
     let dataMap = {
-      "0728.xlsx": [],
-      "0804.xlsx": []
+      "0804.xlsx": [],
+      "0811.xlsx": []
     };
 
     // 엑셀 파일을 미리 모두 불러오기
@@ -50,7 +50,7 @@
         });
     };
 
-    Promise.all([loadExcel("0728.xlsx"), loadExcel("0804.xlsx")])
+    Promise.all([loadExcel("0804.xlsx"), loadExcel("0811.xlsx")])
       .then(() => {
         document.getElementById("result").textContent = "MIS로 조회";
       })
@@ -83,6 +83,7 @@
 
 </body>
 </html>
+
 
 
 
