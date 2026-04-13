@@ -23,7 +23,6 @@
   <label for="fileSelector">주문일 선택</label>
   <select id="fileSelector">
     <option value="0406.xlsx">차세대 전체배송</option>
-    <option value="1013.xlsx"></option>
   </select>
 
   <input type="text" id="searchInput" placeholder="MIS" />
@@ -35,7 +34,6 @@
     const fileSelector = document.getElementById('fileSelector');
     let dataMap = {
       "00406.xlsx": [],
-      "1013.xlsx": []
     };
 
     // 엑셀 파일을 미리 모두 불러오기
@@ -50,7 +48,7 @@
         });
     };
 
-    Promise.all([loadExcel("0406.xlsx"), loadExcel("1013.xlsx")])
+    Promise.all([loadExcel("0406.xlsx")])
       .then(() => {
         document.getElementById("result").textContent = "MIS로 조회";
       })
